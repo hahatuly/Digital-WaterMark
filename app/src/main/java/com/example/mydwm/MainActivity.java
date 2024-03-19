@@ -16,9 +16,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 
 
 public class MainActivity extends Activity {
@@ -51,8 +49,10 @@ public class MainActivity extends Activity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                startActivityForResult(intent, 2);
+                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                saveImage(bitmap);
+                //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                //startActivityForResult(intent, 2);
             }
         });
     }
@@ -67,35 +67,31 @@ public class MainActivity extends Activity {
             Glide.with(this).load(selectedImage).into(imageView);
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri treeUri = data.getData();
-            try {
-                File root = new File(treeUri.getPath());
-                if (!root.exists()) {
-                    root.mkdirs();
-                }
+    }
 
-                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                FileOutputStream fos = null;
-                try {
-                    String path = root.getAbsolutePath() + "/myImage111.png";
-                    fos = new FileOutputStream(path);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (fos != null) {
-                            fos.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+    private void saveImage(Bitmap bitmap)
+    {
+        Uri outputFileUri = getOutputMediaFileUri();
+        Intent intent = new Intent(android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(outputFileUri);
+        sendBroadcast(intent);
+    }
+
+    private Uri getOutputMediaFileUri()
+    {
+        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
             }
         }
+
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + imageFileName + ".jpg");
+        Uri outputFileUri = Uri.fromFile(mediaFile);
+        return outputFileUri;
     }
 }

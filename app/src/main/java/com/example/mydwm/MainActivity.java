@@ -11,7 +11,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import java.io.File;
@@ -23,6 +25,14 @@ public class MainActivity extends Activity {
     private Button imageButton;
     private Button saveButton;
 
+    private Button insertButton;
+    private EditText editText;
+    private String insertText;
+    private Button extractButton;
+    private String extractText;
+    private TextView textView;
+
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +42,11 @@ public class MainActivity extends Activity {
         imageButton = findViewById(R.id.imageButton);
         imageView = findViewById(R.id.imageView);
         saveButton = findViewById(R.id.saveButton);
+
+        insertButton = findViewById(R.id.insertButton);
+        editText = findViewById(R.id.editText);
+        extractButton = findViewById(R.id.extractButton);
+        textView = findViewById(R.id.textView);
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,6 +60,25 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 saveImage(bitmap);
+            }
+        });
+
+        insertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                insertText = editText.getText().toString();
+                //обработка текста
+            }
+        });
+        extractButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                extractText = insertText;
+                if (extractText != null) {
+                    textView.setText(extractText);
+                } else {
+                    textView.setText("Цифровой водяной знак не найден.");
+                }
             }
         });
     }

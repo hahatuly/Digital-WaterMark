@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
+    private  Bitmap bitmap;
     private ImageView imageView;
     private Button imageButton;
     private Button saveButton;
@@ -61,7 +62,7 @@ public class MainActivity extends Activity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                //bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 saveImage(bitmap);
             }
         });
@@ -83,21 +84,14 @@ public class MainActivity extends Activity {
         extractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //extractText = binaryText;
-                //int tenCode = Integer.parseInt(binaryText, 2);//////////
-                //int charCode = Integer.parseInt(binaryText.substring(2), 2);
-                //String str = new Character((char)charCode).toString();
-                //StringBuilder textBuild = new StringBuilder();
                 String textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
                 int tenCode = 0;
                 for (int i=7; i<binaryText.length(); i+=7)
                 {
-                    //tenCode = Integer.parseInt(binaryText.substring(i,i+7), 2);
                     String returnChar = Character.toString((char) Integer.parseInt(binaryText.substring(i,i+7), 2));////////
                     textBuild=textBuild + returnChar;//////////
                 }
-                //extractText = Character.toString((char)tenCode);////////
-                //extractText =String.valueOf(tenCode);
+
                 extractText = textBuild;
                 if (extractText != null) {
                     textView.setText(extractText);
@@ -113,7 +107,13 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
-            Glide.with(this).load(selectedImage).into(imageView);
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            //imageView.setImageBitmap(bitmap);
+            Glide.with(this).load(selectedImage).into(imageView);//сделать с bitmap
         }
     }
 
@@ -125,7 +125,7 @@ public class MainActivity extends Activity {
         try
         {
             FileOutputStream fos = new FileOutputStream(outputFileUri.getPath());
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,14 +135,14 @@ public class MainActivity extends Activity {
 
     private Uri getOutputMediaFileUri() {
         String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+            String imageFileName = "PNG_" + timeStamp + "_";
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DigitalWatermarksImages");
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 return null;
             }
         }
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + imageFileName + ".jpg");
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + imageFileName + ".png");
         Uri outputFileUri = Uri.fromFile(mediaFile);
         return outputFileUri;
     }

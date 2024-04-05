@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
     private ImageView imageView;
@@ -28,6 +30,7 @@ public class MainActivity extends Activity {
     private Button insertButton;
     private EditText editText;
     private String insertText;
+    private String binaryText;
     private Button extractButton;
     private String extractText;
     private TextView textView;
@@ -67,13 +70,35 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 insertText = editText.getText().toString();
+                StringBuilder binaryBuild = new StringBuilder();
+                for (int i=0; i<insertText.length(); i++)
+                {
+                    char c = insertText.charAt(i);
+                    binaryBuild.append(Integer.toBinaryString(c));
+                }
+                binaryText = binaryBuild.toString();
                 //обработка текста
             }
         });
         extractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                extractText = insertText;
+                //extractText = binaryText;
+                //int tenCode = Integer.parseInt(binaryText, 2);//////////
+                //int charCode = Integer.parseInt(binaryText.substring(2), 2);
+                //String str = new Character((char)charCode).toString();
+                //StringBuilder textBuild = new StringBuilder();
+                String textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
+                int tenCode = 0;
+                for (int i=7; i<binaryText.length(); i+=7)
+                {
+                    //tenCode = Integer.parseInt(binaryText.substring(i,i+7), 2);
+                    String returnChar = Character.toString((char) Integer.parseInt(binaryText.substring(i,i+7), 2));////////
+                    textBuild=textBuild + returnChar;//////////
+                }
+                //extractText = Character.toString((char)tenCode);////////
+                //extractText =String.valueOf(tenCode);
+                extractText = textBuild;
                 if (extractText != null) {
                     textView.setText(extractText);
                 } else {

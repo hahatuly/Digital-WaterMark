@@ -3,8 +3,11 @@ package com.example.mydwm;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+//import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+//import android.graphics.BitmapFactory;
+import android.graphics.Color;
+//import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,10 +22,14 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+//import java.nio.charset.Charset;
+//import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
+    private String binaryImageString;
+
+
+
     private  Bitmap bitmap;
     private ImageView imageView;
     private Button imageButton;
@@ -71,28 +78,27 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 insertText = editText.getText().toString();
-                StringBuilder binaryBuild = new StringBuilder();
-                for (int i=0; i<insertText.length(); i++)
+                String binarySim=Integer.toBinaryString(insertText.charAt(0));
+                for (int i=1; i<insertText.length(); i++)
                 {
-                    char c = insertText.charAt(i);
-                    binaryBuild.append(Integer.toBinaryString(c));
+                    binarySim+=Integer.toBinaryString(insertText.charAt(i));
                 }
-                binaryText = binaryBuild.toString();
+                binaryText = binarySim;
                 //обработка текста
             }
         });
         extractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
+                /*String textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
                 int tenCode = 0;
                 for (int i=7; i<binaryText.length(); i+=7)
                 {
                     String returnChar = Character.toString((char) Integer.parseInt(binaryText.substring(i,i+7), 2));////////
                     textBuild=textBuild + returnChar;//////////
                 }
-
-                extractText = textBuild;
+                extractText = textBuild;*/
+                extractText=binaryImageString;
                 if (extractText != null) {
                     textView.setText(extractText);
                 } else {
@@ -113,8 +119,31 @@ public class MainActivity extends Activity {
                 throw new RuntimeException(e);
             }
             //imageView.setImageBitmap(bitmap);
-            Glide.with(this).load(selectedImage).into(imageView);//сделать с bitmap
+            Glide.with(this).load(selectedImage).into(imageView);
+            binaryImageString = convertToBinaryString(bitmap);
         }
+    }
+
+    private String convertToBinaryString(Bitmap bitmap)
+    {
+        StringBuilder binaryImageStringBuilder = new StringBuilder();
+        for (int x = 0; x < bitmap.getWidth(); x++) {
+            for (int y = 0; y < bitmap.getHeight(); y++) {
+                int pixelColor = bitmap.getPixel(x, y);
+                // Здесь вы можете добавить логику для преобразования цвета в бинарный код
+                // Например, использование масок для RGB
+                int red = Color.red(pixelColor);
+                int green = Color.green(pixelColor);
+                int blue = Color.blue(pixelColor);
+
+                // Преобразование каждого компонента цвета в двоичную систему
+                binaryImageStringBuilder.append(Integer.toBinaryString(red)).append(" ");
+                binaryImageStringBuilder.append(Integer.toBinaryString(green)).append(" ");
+                binaryImageStringBuilder.append(Integer.toBinaryString(blue)).append(" ");
+            }
+        }
+
+        return binaryImageStringBuilder.toString();
     }
 
     private void saveImage(Bitmap bitmap) {

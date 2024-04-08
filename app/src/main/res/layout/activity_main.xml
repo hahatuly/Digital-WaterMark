@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="144dp"
-        android:layout_marginTop="616dp"
+        android:layout_marginTop="524dp"
         android:onClick="onClick"
         android:text="Save image"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,11 +30,32 @@
         tools:ignore="MissingConstraints" />
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="289dp"
-        android:layout_height="350dp"
+        android:layout_width="286dp"
+        android:layout_height="280dp"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="52dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editKey"
+        android:layout_width="356dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="332dp"
+        android:hint="Enter your key here"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/keyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="148dp"
+        android:layout_marginTop="380dp"
+        android:onClick="onClick"
+        android:text="Insert key"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +63,7 @@
         android:id="@+id/insertButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
+        android:layout_marginStart="128dp"
         android:layout_marginTop="476dp"
         android:onClick="onClick"
         android:text="Insert watermark"
@@ -53,7 +74,7 @@
         android:layout_width="356dp"
         android:layout_height="54dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="424dp"
+        android:layout_marginTop="428dp"
         android:hint="Enter watermark here"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -62,18 +83,19 @@
         android:id="@+id/extractButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="524dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="568dp"
         android:onClick="onClick"
         android:text="Extract watermark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="350dp"
         android:layout_height="42dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="572dp"
+        android:layout_marginTop="616dp"
         android:text="Your watermark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

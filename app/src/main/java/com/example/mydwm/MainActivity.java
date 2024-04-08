@@ -69,28 +69,58 @@ public class MainActivity extends Activity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 saveImage(bitmap);
             }
         });
 
         insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                insertText = editText.getText().toString();
-                String binarySim=Integer.toBinaryString(insertText.charAt(0));
-                for (int i=1; i<insertText.length(); i++)
-                {
-                    binarySim+=Integer.toBinaryString(insertText.charAt(i));
+            public void onClick(View v)
+            {
+                if (editText!=null && bitmap!=null) {
+                    insertText = editText.getText().toString();
+                    String binarySim = Integer.toBinaryString(insertText.charAt(0));
+                    for (int i = 1; i < insertText.length(); i++) {
+                        binarySim += Integer.toBinaryString(insertText.charAt(i));
+                    }
+                    binaryText = binarySim;
+                    //обработка текста
+                    int W = bitmap.getWidth();
+                    int H = bitmap.getHeight();
+                    int[][][] clr = new int[3][H][W];
+                    StringBuilder binaryImageStringBuilder = new StringBuilder();
+                    for (int x = 0; x < W; x++) {
+                        for (int y = 0; y < H; y++) {
+                            int pixelColor = bitmap.getPixel(x, y);
+                            // Здесь вы можете добавить логику для преобразования цвета в бинарный код
+                            // Например, использование масок для RGB
+                            clr[0][y][x] = Color.red(pixelColor);
+                            clr[1][y][x] = Color.green(pixelColor);
+                            clr[2][y][x] = Color.blue(pixelColor);
+                            // Преобразование каждого компонента цвета в двоичную систему
+                            /*binaryImageStringBuilder.append(Integer.toBinaryString(clr[0][y][x])).append(" ");
+                            binaryImageStringBuilder.append(Integer.toBinaryString(clr[1][y][x])).append(" ");
+                            binaryImageStringBuilder.append(Integer.toBinaryString(clr[2][y][x])).append(" ");*/
+                        }
+                    }
+                    try
+                    {
+                        for (int x = 0; x < W; x++) {
+                            for (int y = 0; y < H; y++) {
+                                bitmap.setPixel(x, y, Color.rgb(clr[0][y][x], clr[1][y][x], clr[2][y][x]));
+                            }
+                        }
+                        imageView.setImageBitmap(bitmap);
+                        //binaryImageString = binaryImageStringBuilder.toString();//стереть
+                    }
+                    catch (Exception e){}
                 }
-                binaryText = binarySim;
-                //обработка текста
             }
         });
         extractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*String textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
+                /*вернутьString textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
                 int tenCode = 0;
                 for (int i=7; i<binaryText.length(); i+=7)
                 {
@@ -118,13 +148,13 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            //imageView.setImageBitmap(bitmap);
-            Glide.with(this).load(selectedImage).into(imageView);
-            binaryImageString = convertToBinaryString(bitmap);
+            imageView.setImageBitmap(bitmap);
+            //Glide.with(this).load(selectedImage).into(imageView);
+            //стереть binaryImageString = convertToBinaryString(bitmap);
         }
     }
 
-    private String convertToBinaryString(Bitmap bitmap)
+   /*стереть private String convertToBinaryString(Bitmap bitmap)
     {
         StringBuilder binaryImageStringBuilder = new StringBuilder();
         for (int x = 0; x < bitmap.getWidth(); x++) {
@@ -144,7 +174,7 @@ public class MainActivity extends Activity {
         }
 
         return binaryImageStringBuilder.toString();
-    }
+    }*/
 
     private void saveImage(Bitmap bitmap) {
         Uri outputFileUri = getOutputMediaFileUri();

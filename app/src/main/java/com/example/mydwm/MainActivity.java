@@ -19,9 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 //import java.nio.charset.Charset;
 //import java.nio.charset.StandardCharsets;
 
@@ -39,6 +43,8 @@ public class MainActivity extends Activity {
     private EditText editText;
     private String insertText;
     private String binaryText;
+    private List<Integer> pixels;
+    private List<Integer> reconstructedPixels;
     private Button extractButton;
     private String extractText;
     private TextView textView;
@@ -85,7 +91,66 @@ public class MainActivity extends Activity {
                     }
                     binaryText = binarySim;
                     //обработка текста
-                    int W = bitmap.getWidth();
+
+                    // Get the width and height of the bitmap
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    // Create a binary string to store pixel values
+                    StringBuilder binaryString = new StringBuilder();
+
+                    // Encode each pixel into binary code
+                    for (int y = 0; y < height; y++) {
+                        for (int x = 0; x < width; x++) {
+                            int pixel = bitmap.getPixel(x, y);
+                            int red = Color.red(pixel);
+                            int green = Color.green(pixel);
+                            int blue = Color.blue(pixel);
+                            int alpha = Color.alpha(pixel);
+
+                            // Append each color component to the binary string
+                            binaryString.append(String.format("%8s", Integer.toBinaryString(alpha)).replace(' ', '0'));
+                            binaryString.append(String.format("%8s", Integer.toBinaryString(red)).replace(' ', '0'));
+                            binaryString.append(String.format("%8s", Integer.toBinaryString(green)).replace(' ', '0'));
+                            binaryString.append(String.format("%8s", Integer.toBinaryString(blue)).replace(' ', '0'));
+                        }
+                    }
+
+                    // Create a new bitmap to store the decoded image
+                    Bitmap decodedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+                    // Decode the binary string back into pixels
+                    int index = 0;
+                    for (int y = 0; y < height; y++) {
+                        for (int x = 0; x < width; x++) {
+                            // Extract each color component from the binary string
+                            int alpha = Integer.parseInt(binaryString.substring(index, index + 8), 2);
+                            index += 8;
+                            int red = Integer.parseInt(binaryString.substring(index, index + 8), 2);
+                            index += 8;
+                            int green = Integer.parseInt(binaryString.substring(index, index + 8), 2);
+                            index += 8;
+                            int blue = Integer.parseInt(binaryString.substring(index, index + 8), 2);
+                            index += 8;
+
+                            // Set the pixel in the decoded bitmap
+                            decodedBitmap.setPixel(x, y, Color.argb(alpha, red, green, blue));
+                        }
+                    }
+
+                    // Display the decoded bitmap
+                    //ImageView imageView = findViewById(R.id.imageView);
+                    imageView.setImageBitmap(decodedBitmap);
+
+
+
+
+
+
+
+
+
+                    /*int W = bitmap.getWidth();
                     int H = bitmap.getHeight();
                     int[][][] clr = new int[3][H][W];
                     StringBuilder binaryImageStringBuilder = new StringBuilder();
@@ -98,22 +163,22 @@ public class MainActivity extends Activity {
                             clr[1][y][x] = Color.green(pixelColor);
                             clr[2][y][x] = Color.blue(pixelColor);
                             // Преобразование каждого компонента цвета в двоичную систему
-                            /*binaryImageStringBuilder.append(Integer.toBinaryString(clr[0][y][x])).append(" ");
-                            binaryImageStringBuilder.append(Integer.toBinaryString(clr[1][y][x])).append(" ");
-                            binaryImageStringBuilder.append(Integer.toBinaryString(clr[2][y][x])).append(" ");*/
+                            //binaryImageStringBuilder.append(Integer.toBinaryString(clr[0][y][x])).append(" ");
+                            //binaryImageStringBuilder.append(Integer.toBinaryString(clr[1][y][x])).append(" ");
+                            //binaryImageStringBuilder.append(Integer.toBinaryString(clr[2][y][x])).append(" ");
+                            
+                            //bitmap.setPixel(x, y, Color.argb(Color.alpha(pixelColor), clr[0][y][x], clr[1][y][x], clr[2][y][x]));
                         }
                     }
-                    try
-                    {
-                        for (int x = 0; x < W; x++) {
+                    bitmap.setPixel(1, 1, Color.argb(255, clr[0][1][1], clr[1][1][1], clr[2][1][1]));*/
+                    /*for (int x = 0; x < W; x++) {
                             for (int y = 0; y < H; y++) {
                                 bitmap.setPixel(x, y, Color.rgb(clr[0][y][x], clr[1][y][x], clr[2][y][x]));
                             }
-                        }
-                        imageView.setImageBitmap(bitmap);
-                        //binaryImageString = binaryImageStringBuilder.toString();//стереть
-                    }
-                    catch (Exception e){}
+                    }*/
+                    //imageView.setImageBitmap(bitmap);
+                    //binaryImageString = binaryImageStringBuilder.toString();//стереть
+
                 }
             }
         });
@@ -128,7 +193,7 @@ public class MainActivity extends Activity {
                     textBuild=textBuild + returnChar;//////////
                 }
                 extractText = textBuild;*/
-                extractText=binaryImageString;
+                extractText=reconstructedPixels.toString();
                 if (extractText != null) {
                     textView.setText(extractText);
                 } else {
@@ -148,8 +213,8 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            imageView.setImageBitmap(bitmap);
-            //Glide.with(this).load(selectedImage).into(imageView);
+            //imageView.setImageBitmap(bitmap);
+            Glide.with(this).load(selectedImage).into(imageView);
             //стереть binaryImageString = convertToBinaryString(bitmap);
         }
     }

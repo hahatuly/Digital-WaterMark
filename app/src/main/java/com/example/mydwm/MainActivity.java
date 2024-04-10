@@ -26,9 +26,12 @@ public class MainActivity extends Activity {
     private Button imageButton;
     private Button saveButton;
 
-    private Button insertButton;
+    private EditText keyText;
+    private Button keyButton;
+    private String binaryKey;
+
     private EditText editText;
-    private String binaryText; //потом стереть
+    private Button insertButton;
     private Bitmap modifiedBitmap;
 
     private Button extractButton;
@@ -65,17 +68,29 @@ public class MainActivity extends Activity {
                 saveImage(modifiedBitmap);
             }
         });
+        keyButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                if (keyText != null) {
+                    String key = keyText.getText().toString();
+                    binaryKey = Integer.toBinaryString(key.charAt(0));
+                    for (int i = 1; i < key.length(); i++) {
+                        binaryKey += Integer.toBinaryString(key.charAt(i));
+                    }
+                }
+            }
+        });
         insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
                 if (editText!=null && bitmap!=null) {
                     String insertText = editText.getText().toString();
-                    String binarySim = Integer.toBinaryString(insertText.charAt(0));
+                    String binaryText = Integer.toBinaryString(insertText.charAt(0));
                     for (int i = 1; i < insertText.length(); i++) {
-                        binarySim += Integer.toBinaryString(insertText.charAt(i));
+                        binaryText += Integer.toBinaryString(insertText.charAt(i));
                     }
-                    binaryText = binarySim;//потом инициализировать тут binaryText
                     //обработка текста
 
                     int width = bitmap.getWidth();

@@ -121,15 +121,14 @@ public class MainActivity extends Activity {
         extractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String textBuild = Character.toString((char) Integer.parseInt(binaryText.substring(0,7), 2));
-                for (int i=7; i<binaryText.length(); i+=7)
+                if (extractText != null) {
+                String textBuild = Character.toString((char) Integer.parseInt(extractText.substring(0,7), 2));
+                for (int i=7; i<extractText.length(); i+=7)
                 {
-                    String returnChar = Character.toString((char) Integer.parseInt(binaryText.substring(i,i+7), 2));
+                    String returnChar = Character.toString((char) Integer.parseInt(extractText.substring(i,i+7), 2));
                     textBuild+=returnChar;
                 }
-                extractText = textBuild;
-                if (extractText != null) {
-                    textView.setText(extractText);
+                textView.setText(textBuild);
                 } else {
                     textView.setText("Цифровой водяной знак не найден.");
                 }

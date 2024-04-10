@@ -29,6 +29,8 @@ public class MainActivity extends Activity {
     private EditText keyText;
     private Button keyButton;
     private String binaryKey;
+    private char[] binaryKeyArray;
+
 
     private EditText editText;
     private Button insertButton;
@@ -49,8 +51,12 @@ public class MainActivity extends Activity {
         imageView = findViewById(R.id.imageView);
         saveButton = findViewById(R.id.saveButton);
 
+        keyButton = findViewById(R.id.keyButton);
+        keyText = findViewById(R.id.keyText);
+
         insertButton = findViewById(R.id.insertButton);
         editText = findViewById(R.id.editText);
+
         extractButton = findViewById(R.id.extractButton);
         textView = findViewById(R.id.textView);
 
@@ -78,6 +84,7 @@ public class MainActivity extends Activity {
                     for (int i = 1; i < key.length(); i++) {
                         binaryKey += Integer.toBinaryString(key.charAt(i));
                     }
+                    binaryKeyArray = binaryKey.toCharArray();
                 }
             }
         });
@@ -85,7 +92,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v)
             {
-                if (editText!=null && bitmap!=null) {
+                if (editText!=null && bitmap!=null && keyText!=null) {
                     String insertText = editText.getText().toString();
                     String binaryText = Integer.toBinaryString(insertText.charAt(0));
                     for (int i = 1; i < insertText.length(); i++) {
@@ -97,6 +104,7 @@ public class MainActivity extends Activity {
                     int height = bitmap.getHeight();
                     // Create a new bitmap to store the modified image
                     modifiedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    int i = 0;
                     for (int y = 0; y < height; y++)
                     {
                         for (int x = 0; x < width; x++)
@@ -105,10 +113,30 @@ public class MainActivity extends Activity {
                             int red = Color.red(pixel);
                             int green = Color.green(pixel);
                             int blue = Color.blue(pixel);
-                            int alpha = Color.alpha(pixel);
-                            if (((y==1 || y % 3 == 0) && (y!=height-1)) && ((x==1 || x % 3 == 0) && (x!=width-1)) && (red<=245))
-                            {
-                                red+=10;//подогнать под возможность извлечения
+                            int alpha = Color.alpha(pixel);if (((y==1 || y % 3 == 0) && (y!=height-1)) && ((x==1 || x % 3 == 0) && (x!=width-1)))
+                            { //иф номер пикселя соответсвует биту ключа
+                                if (binaryKeyArray[i]=='1') {
+                                    if (red > green && red > blue) {
+                                        if (red <= 245) {
+                                            red += 10; // 10 умножить на бит вотермарки
+                                        } else red -= 10;
+                                    }
+                                    if (green > red && green > blue) {
+                                        if (green <= 245) {
+                                            green += 10;
+                                        } else green -= 10;
+                                    }
+                                    if (blue >= red && blue >= green) {
+                                        if (blue <= 245) {
+                                            blue += 10;
+                                        } else blue -= 10;
+                                    }
+                                }
+                                i++;
+                                if (i == binaryKey.length())
+                                {
+                                    i=0;
+                                }
                             }
                             int modifiedColor = Color.argb(alpha, red, green, blue);
                             modifiedBitmap.setPixel(x, y, modifiedColor);

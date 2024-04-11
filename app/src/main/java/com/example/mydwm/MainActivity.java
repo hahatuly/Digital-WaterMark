@@ -98,13 +98,15 @@ public class MainActivity extends Activity {
                     for (int i = 1; i < insertText.length(); i++) {
                         binaryText += Integer.toBinaryString(insertText.charAt(i));
                     }
+                    char[] binaryTextArray = binaryText.toCharArray();
                     //обработка текста
 
                     int width = bitmap.getWidth();
                     int height = bitmap.getHeight();
                     // Create a new bitmap to store the modified image
                     modifiedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                    int i = 0;
+                    int iKey = 0;
+                    int iText =0;
                     for (int y = 0; y < height; y++)
                     {
                         for (int x = 0; x < width; x++)
@@ -114,28 +116,37 @@ public class MainActivity extends Activity {
                             int green = Color.green(pixel);
                             int blue = Color.blue(pixel);
                             int alpha = Color.alpha(pixel);if (((y==1 || y % 3 == 0) && (y!=height-1)) && ((x==1 || x % 3 == 0) && (x!=width-1)))
-                            { //иф номер пикселя соответсвует биту ключа
-                                if (binaryKeyArray[i]=='1') {
-                                    if (red > green && red > blue) {
-                                        if (red <= 245) {
-                                            red += 10; // 10 умножить на бит вотермарки
-                                        } else red -= 10;
+                            {//добавить пробел между ключами и между отермарками мб 7 нулей
+                                if (binaryKeyArray[iKey]=='1')
+                                {
+                                    if (binaryTextArray[iText]=='1')
+                                    {
+                                        if (red > green && red > blue) {
+                                            if (red <= 245) {
+                                                red += 10; // 10 умножить на бит вотермарки
+                                            } else red -= 10;
+                                        }
+                                        if (green > red && green > blue) {
+                                            if (green <= 245) {
+                                                green += 10;
+                                            } else green -= 10;
+                                        }
+                                        if (blue >= red && blue >= green) {
+                                            if (blue <= 245) {
+                                                blue += 10;
+                                            } else blue -= 10;
+                                        }
                                     }
-                                    if (green > red && green > blue) {
-                                        if (green <= 245) {
-                                            green += 10;
-                                        } else green -= 10;
-                                    }
-                                    if (blue >= red && blue >= green) {
-                                        if (blue <= 245) {
-                                            blue += 10;
-                                        } else blue -= 10;
+                                    iText++;
+                                    if (iText == binaryText.length())
+                                    {
+                                        iText=0;
                                     }
                                 }
-                                i++;
-                                if (i == binaryKey.length())
+                                iKey++;
+                                if (iKey == binaryKey.length())
                                 {
-                                    i=0;
+                                    iKey=0;
                                 }
                             }
                             int modifiedColor = Color.argb(alpha, red, green, blue);

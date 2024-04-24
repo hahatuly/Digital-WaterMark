@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
                             int green = Color.green(pixel);
                             int blue = Color.blue(pixel);
                             int alpha = Color.alpha(pixel);
-                            if ((y % 2 == 0) && (x % 2 == 0) && (x > 0) && (x < width-1) && (y > 0) && (y < height-1)) {
+                            if ((y % 3 == 0) && (x % 3 == 0) && (x > 0) && (x < width-1) && (y > 0) && (y < height-1)) {
                                 if (fence == false) {
                                     if (binaryKeyArray[iKey] == '1') {
 
@@ -217,7 +217,7 @@ public class MainActivity extends Activity {
                         int red = Color.red(pixel);
                         int green = Color.green(pixel);
                         int blue = Color.blue(pixel);
-                        int alpha = Color.alpha(pixel);
+                        //int alpha = Color.alpha(pixel);
                         int pixel1 = bitmap.getPixel(x - 1, y - 1);
                         int pixel2 = bitmap.getPixel(x, y - 1);
                         int pixel3 = bitmap.getPixel(x + 1, y - 1);
@@ -234,7 +234,7 @@ public class MainActivity extends Activity {
                                 || ((Math.abs(green - arithmeticMeanGreen) >= 9 && Math.abs(green - arithmeticMeanGreen) <= 11) && Math.abs(red - arithmeticMeanRed) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)
                                 || ((Math.abs(blue - arithmeticMeanBlue) >= 9 && Math.abs(blue - arithmeticMeanBlue) <= 11) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(red - arithmeticMeanRed) <= 1)) {
                             yStart = y;
-                            xStart = x+2;
+                            xStart = x+3;
                             break;
                         }
                     }
@@ -243,13 +243,13 @@ public class MainActivity extends Activity {
                 if (yStart != -1) { //подогнать тут всё дальше
                     int iKey = 0;
                     String extractText = "";
-                        for (int x = xStart; x < width-1; x += 2) {
+                        for (int x = xStart; x < width-1; x += 3) {
                             if (binaryKeyArray[iKey] == '1') {
                                 int pixel = bitmap.getPixel(x, yStart);
                                 int red = Color.red(pixel);
                                 int green = Color.green(pixel);
                                 int blue = Color.blue(pixel);
-                                int alpha = Color.alpha(pixel);
+                                //int alpha = Color.alpha(pixel);
                                 int pixel1 = bitmap.getPixel(x - 1, yStart - 1);
                                 int pixel2 = bitmap.getPixel(x, yStart - 1);
                                 int pixel3 = bitmap.getPixel(x + 1, yStart - 1);

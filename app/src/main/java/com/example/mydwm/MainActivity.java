@@ -72,13 +72,11 @@ public class MainActivity extends Activity {
         });
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 saveImage(bitmap);
             }
         });
-        keyButton.setOnClickListener(new View.OnClickListener()
-        {
+        keyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (keyText != null) {
@@ -91,7 +89,240 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
         insertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editText != null && bitmap != null && keyText != null) {
+                    String insertText = editText.getText().toString();
+                    String binaryText = Integer.toBinaryString(insertText.charAt(0));
+                    for (int i = 1; i < insertText.length(); i++) {
+                        binaryText += Integer.toBinaryString(insertText.charAt(i));
+                    }
+                    char[] binaryTextArray = binaryText.toCharArray();
+                    //обработка текста
+
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    Bitmap modifiedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    int iKey = 0;
+                    int iText = 0;
+                    boolean fence = true;
+                    for (int y = 0; y < height; y++) {
+                        for (int x = 0; x < width; x++) {
+                            int pixel = bitmap.getPixel(x, y);
+                            int red = Color.red(pixel);
+                            int green = Color.green(pixel);
+                            int blue = Color.blue(pixel);
+                            int alpha = Color.alpha(pixel);
+                            if ((y % 2 == 0) && (x % 2 == 0) && (x > 0) && (x < width-1) && (y > 0) && (y < height-1)) {
+                                if (fence == false) {
+                                    if (binaryKeyArray[iKey] == '1') {
+
+                                        if (binaryTextArray[iText] == '1') {
+                                            int pixel1 = bitmap.getPixel(x - 1, y - 1);
+                                            int pixel2 = bitmap.getPixel(x, y - 1);
+                                            int pixel3 = bitmap.getPixel(x + 1, y - 1);
+                                            int pixel4 = bitmap.getPixel(x + 1, y);
+                                            int pixel5 = bitmap.getPixel(x + 1, y + 1);
+                                            int pixel6 = bitmap.getPixel(x, y + 1);
+                                            int pixel7 = bitmap.getPixel(x - 1, y + 1);
+                                            int pixel8 = bitmap.getPixel(x - 1, y);
+
+                                            red = (Color.red(pixel1) + Color.red(pixel2) + Color.red(pixel3) + Color.red(pixel4) + Color.red(pixel5) + Color.red(pixel6) + Color.red(pixel7) + Color.red(pixel8)) / 8;
+                                            green = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
+                                            blue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
+                                            if (blue >= red && blue >= green) {
+                                                if (blue <= 250) {
+                                                    blue += 5;
+                                                } else blue -= 5;
+                                            } else if (green >= red) {
+                                                if (green <= 250) {
+                                                    green += 5;
+                                                } else green -= 5;
+                                            } else {
+                                                if (red <= 250) {
+                                                    red += 5;
+                                                } else red -= 5;
+                                            }
+                                        }
+                                        iText++;
+                                        //if (iText == binaryText.length()) {
+                                        //iText = 0;
+                                        //    skip7 = 0;
+                                        //iKey = 0;
+                                        //}
+
+                                    }
+                                    iKey++;
+                                    if (iKey == binaryKey.length()) {
+                                        iKey = 0;
+                                    }
+                                    if (iText == binaryText.length()) {
+                                        iText = 0;
+                                        iKey = 0;
+                                        fence = true;
+                                    }
+                                } else {
+                                    int pixel1 = bitmap.getPixel(x - 1, y - 1);
+                                    int pixel2 = bitmap.getPixel(x, y - 1);
+                                    int pixel3 = bitmap.getPixel(x + 1, y - 1);
+                                    int pixel4 = bitmap.getPixel(x + 1, y);
+                                    int pixel5 = bitmap.getPixel(x + 1, y + 1);
+                                    int pixel6 = bitmap.getPixel(x, y + 1);
+                                    int pixel7 = bitmap.getPixel(x - 1, y + 1);
+                                    int pixel8 = bitmap.getPixel(x - 1, y);
+
+                                    red = (Color.red(pixel1) + Color.red(pixel2) + Color.red(pixel3) + Color.red(pixel4) + Color.red(pixel5) + Color.red(pixel6) + Color.red(pixel7) + Color.red(pixel8)) / 8;
+                                    green = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
+                                    blue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
+                                    if (blue >= red && blue >= green) {
+                                        if (blue <= 245) {
+                                            blue += 10;
+                                        } else blue -= 10;
+                                    } else if (green >= red) {
+                                        if (green <= 245) {
+                                            green += 10;
+                                        } else green -= 10;
+                                    } else {
+                                        if (red <= 245) {
+                                            red += 10;
+                                        } else red -= 10;
+                                    }
+                                    fence = false;
+                                }
+                            }
+                            int modifiedColor = Color.argb(alpha, red, green, blue);
+                            modifiedBitmap.setPixel(x, y, modifiedColor);
+                        }
+                        iKey = 0;
+                        iText = 0;
+                        fence = true;
+                    }
+                    bitmap = modifiedBitmap;
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        });
+        extractButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                int yStart = -1;
+                int xStart = -1;
+                for (int y = 1; y < height-1; y++) {
+                    for (int x = 1; x < width-1; x++) {
+                        int pixel = bitmap.getPixel(x, y);
+                        int red = Color.red(pixel);
+                        int green = Color.green(pixel);
+                        int blue = Color.blue(pixel);
+                        int alpha = Color.alpha(pixel);
+                        int pixel1 = bitmap.getPixel(x - 1, y - 1);
+                        int pixel2 = bitmap.getPixel(x, y - 1);
+                        int pixel3 = bitmap.getPixel(x + 1, y - 1);
+                        int pixel4 = bitmap.getPixel(x + 1, y);
+                        int pixel5 = bitmap.getPixel(x + 1, y + 1);
+                        int pixel6 = bitmap.getPixel(x, y + 1);
+                        int pixel7 = bitmap.getPixel(x - 1, y + 1);
+                        int pixel8 = bitmap.getPixel(x - 1, y);
+
+                        int arithmeticMeanRed = (Color.red(pixel1) + Color.red(pixel2) + Color.red(pixel3) + Color.red(pixel4) + Color.red(pixel5) + Color.red(pixel6) + Color.red(pixel7) + Color.red(pixel8)) / 8;
+                        int arithmeticMeanGreen = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
+                        int arithmeticMeanBlue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
+                        if (((Math.abs(red - arithmeticMeanRed) >= 9 && Math.abs(red - arithmeticMeanRed) <= 11) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)// добавить сюда +-3
+                                || ((Math.abs(green - arithmeticMeanGreen) >= 9 && Math.abs(green - arithmeticMeanGreen) <= 11) && Math.abs(red - arithmeticMeanRed) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)
+                                || ((Math.abs(blue - arithmeticMeanBlue) >= 9 && Math.abs(blue - arithmeticMeanBlue) <= 11) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(red - arithmeticMeanRed) <= 1)) {
+                            yStart = y;
+                            xStart = x+2;
+                            break;
+                        }
+                    }
+                    if (yStart!=-1) { break; }
+                }
+                if (yStart != -1) { //подогнать тут всё дальше
+                    int iKey = 0;
+                    String extractText = "";
+                        for (int x = xStart; x < width-1; x += 2) {
+                            if (binaryKeyArray[iKey] == '1') {
+                                int pixel = bitmap.getPixel(x, yStart);
+                                int red = Color.red(pixel);
+                                int green = Color.green(pixel);
+                                int blue = Color.blue(pixel);
+                                int alpha = Color.alpha(pixel);
+                                int pixel1 = bitmap.getPixel(x - 1, yStart - 1);
+                                int pixel2 = bitmap.getPixel(x, yStart - 1);
+                                int pixel3 = bitmap.getPixel(x + 1, yStart - 1);
+                                int pixel4 = bitmap.getPixel(x + 1, yStart);
+                                int pixel5 = bitmap.getPixel(x + 1, yStart + 1);
+                                int pixel6 = bitmap.getPixel(x, yStart + 1);
+                                int pixel7 = bitmap.getPixel(x - 1, yStart + 1);
+                                int pixel8 = bitmap.getPixel(x - 1, yStart);
+
+                                int arithmeticMeanRed = (Color.red(pixel1) + Color.red(pixel2) + Color.red(pixel3) + Color.red(pixel4) + Color.red(pixel5) + Color.red(pixel6) + Color.red(pixel7) + Color.red(pixel8)) / 8;
+                                int arithmeticMeanGreen = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
+                                int arithmeticMeanBlue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
+                                if (((Math.abs(red - arithmeticMeanRed) >= 4 && Math.abs(red - arithmeticMeanRed) <= 6) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)// добавить сюда +-3
+                                        || ((Math.abs(green - arithmeticMeanGreen) >= 4 && Math.abs(green - arithmeticMeanGreen) <= 6) && Math.abs(red - arithmeticMeanRed) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)
+                                        || ((Math.abs(blue - arithmeticMeanBlue) >= 4 && Math.abs(blue - arithmeticMeanBlue) <= 6) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(red - arithmeticMeanRed) <= 1)) {
+                                    extractText += '1';
+                                } else {
+                                    extractText += '0';
+                                }
+                                if (((Math.abs(red - arithmeticMeanRed) >= 9 && Math.abs(red - arithmeticMeanRed) <= 11) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)// добавить сюда +-3
+                                        || ((Math.abs(green - arithmeticMeanGreen) >= 9 && Math.abs(green - arithmeticMeanGreen) <= 11) && Math.abs(red - arithmeticMeanRed) <= 1 && Math.abs(blue - arithmeticMeanBlue) <= 1)
+                                        || ((Math.abs(blue - arithmeticMeanBlue) >= 9 && Math.abs(blue - arithmeticMeanBlue) <= 11) && Math.abs(green - arithmeticMeanGreen) <= 1 && Math.abs(red - arithmeticMeanRed) <= 1)) {
+                                    break;
+                                }
+                            }
+                            iKey++;
+                            if (iKey == binaryKey.length()) {
+                                iKey = 0;
+                            }
+                        }
+
+                    /*char[] extractArray = extractText.toCharArray();
+                    String oneExtractText = "";
+                    boolean finish = false;
+                    int p = 0;
+                    String maxExtract="";
+                    while (p < extractArray.length - 8) {
+                        if (extractArray[p] == '0' && extractArray[p + 1] == '0' && extractArray[p + 2] == '0' && extractArray[p + 3] == '0' && extractArray[p + 4] == '0' && extractArray[p + 5] == '0' && extractArray[p + 6] == '0' && extractArray[p + 7] == '1') {
+                            p += 7;
+                        }
+                        oneExtractText += extractArray[p];
+                        p++;
+                        if (extractArray[p] == '0' && extractArray[p + 1] == '0' && extractArray[p + 2] == '0' && extractArray[p + 3] == '0' && extractArray[p + 4] == '0' && extractArray[p + 5] == '0' && extractArray[p + 6] == '0' && extractArray[p + 7] == '1') {
+                            if (oneExtractText.length()>maxExtract.length()) {
+                                maxExtract=oneExtractText;
+                            }
+                            oneExtractText="";
+                        }
+                    }*/
+                    if (extractText != "") {
+                        String textBuild = "";
+                        String oneBinarySim;
+                        for (int i = 0; i < extractText.length() - 6; i += 7) {
+                            oneBinarySim = extractText.substring(i, i + 7);
+                            int cc10 = Integer.parseInt(oneBinarySim, 2);
+                            if (cc10 >= 65 && cc10 <= 122) {
+                                String returnChar = Character.toString((char) cc10);
+                                textBuild += returnChar;
+                            }
+                        }
+                        if (!textBuild.isEmpty()) {
+                            textView.setText(textBuild);
+                        } else {
+                            textView.setText("Цифровой водяной знак не найден.");
+                        }
+                    }
+                } else {
+                    textView.setText("Цифровой водяной знак не найден.");
+                }
+            }
+        });
+    }
+        /*insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
@@ -179,171 +410,104 @@ public class MainActivity extends Activity {
         });
         extractButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
-                int iKey = 0;
-                String extractText = "";
-                for (int yStart = 0; yStart < height; yStart++)
-                {
-                    for (int xStart = 0; xStart < width; xStart++)
-                    {
-                        if ((yStart % 2 == 0) && (xStart % 2 == 0) && (xStart>((width/2)-100)) && (xStart<((width/2)+100)) && (yStart>((height/2)-100)) && (yStart<((height/2)+100)))
-                        {
-                            if (binaryKeyArray[iKey] == '1') {
-                                int pixel = bitmap.getPixel(xStart, yStart);
-                                int red = Color.red(pixel);
-                                int green = Color.green(pixel);
-                                int blue = Color.blue(pixel);
-                                int alpha = Color.alpha(pixel);
-                                int pixel1 = bitmap.getPixel(xStart - 1, yStart - 1);
-                                int pixel2 = bitmap.getPixel(xStart, yStart - 1);
-                                int pixel3 = bitmap.getPixel(xStart + 1, yStart - 1);
-                                int pixel4 = bitmap.getPixel(xStart + 1, yStart);
-                                int pixel5 = bitmap.getPixel(xStart + 1, yStart + 1);
-                                int pixel6 = bitmap.getPixel(xStart, yStart + 1);
-                                int pixel7 = bitmap.getPixel(xStart - 1, yStart + 1);
-                                int pixel8 = bitmap.getPixel(xStart - 1, yStart);
 
-                                int arithmeticMeanRed = (Color.red(pixel1)+Color.red(pixel2)+Color.red(pixel3)+Color.red(pixel4)+Color.red(pixel5)+Color.red(pixel6)+Color.red(pixel7)+Color.red(pixel8))/8;
-                                int arithmeticMeanGreen = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
-                                int arithmeticMeanBlue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
-                                //вставить
-                                //if (xStart==286 && yStart==270) {
-                                //    output = String.valueOf(red) + ' ' + green + ' ' + blue+' '+arithmeticMeanRed+' '+arithmeticMeanGreen+' '+arithmeticMeanBlue;
-                                //}
+                int yStart = -1;
+                int xStart = -1;
+                for (int y = 1; y < height - 1; y++) {
+                    for (int x = 1; x < width - 1; x++) {
+                        int pixel = bitmap.getPixel(x, y);
+                        int red = Color.red(pixel);
+                        int green = Color.green(pixel);
+                        int blue = Color.blue(pixel);
+                        int alpha = Color.alpha(pixel);
+                        int pixel1 = bitmap.getPixel(x - 1, y - 1);
+                        int pixel2 = bitmap.getPixel(x, y - 1);
+                        int pixel3 = bitmap.getPixel(x + 1, y - 1);
+                        int pixel4 = bitmap.getPixel(x + 1, y);
+                        int pixel5 = bitmap.getPixel(x + 1, y + 1);
+                        int pixel6 = bitmap.getPixel(x, y + 1);
+                        int pixel7 = bitmap.getPixel(x - 1, y + 1);
+                        int pixel8 = bitmap.getPixel(x - 1, y);
+
+                        int arithmeticMeanRed = (Color.red(pixel1) + Color.red(pixel2) + Color.red(pixel3) + Color.red(pixel4) + Color.red(pixel5) + Color.red(pixel6) + Color.red(pixel7) + Color.red(pixel8)) / 8;
+                        int arithmeticMeanGreen = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
+                        int arithmeticMeanBlue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
+                        if (((Math.abs(red - arithmeticMeanRed) == 10) && green == arithmeticMeanGreen && blue == arithmeticMeanBlue) || ((Math.abs(green - arithmeticMeanGreen) == 10) && red == arithmeticMeanRed && blue == arithmeticMeanBlue) || ((Math.abs(blue - arithmeticMeanBlue) == 10) && red == arithmeticMeanRed && green == arithmeticMeanGreen)) {
+                            yStart = y;
+                            xStart = x;
+                            break;
+                        }
+                    }
+                    if (yStart != -1) {
+                        break;
+                    }
+                }
+                if (yStart != -1) {
+
+                    int iKey = 0;
+                    String extractText = "";
+                    for (int y = yStart; y < height-1; y+=2) {
+                        for (int x = xStart; x < width-1; x+=2) {
+                            //if ((y % 2 == 0) && (x % 2 == 0) && (x > ((width / 2) - 100)) && (x < ((width / 2) + 100)) && (y > ((height / 2) - 100)) && (y < ((height / 2) + 100))) {
+                                if (binaryKeyArray[iKey] == '1') {
+                                    int pixel = bitmap.getPixel(x, y);
+                                    int red = Color.red(pixel);
+                                    int green = Color.green(pixel);
+                                    int blue = Color.blue(pixel);
+                                    int alpha = Color.alpha(pixel);
+                                    int pixel1 = bitmap.getPixel(x - 1, y - 1);
+                                    int pixel2 = bitmap.getPixel(x, y - 1);
+                                    int pixel3 = bitmap.getPixel(x + 1, y - 1);
+                                    int pixel4 = bitmap.getPixel(x + 1, y);
+                                    int pixel5 = bitmap.getPixel(x + 1, y + 1);
+                                    int pixel6 = bitmap.getPixel(x, y + 1);
+                                    int pixel7 = bitmap.getPixel(x - 1, y + 1);
+                                    int pixel8 = bitmap.getPixel(x - 1, y);
+
+                                    int arithmeticMeanRed = (Color.red(pixel1) + Color.red(pixel2) + Color.red(pixel3) + Color.red(pixel4) + Color.red(pixel5) + Color.red(pixel6) + Color.red(pixel7) + Color.red(pixel8)) / 8;
+                                    int arithmeticMeanGreen = (Color.green(pixel1) + Color.green(pixel2) + Color.green(pixel3) + Color.green(pixel4) + Color.green(pixel5) + Color.green(pixel6) + Color.green(pixel7) + Color.green(pixel8)) / 8;
+                                    int arithmeticMeanBlue = (Color.blue(pixel1) + Color.blue(pixel2) + Color.blue(pixel3) + Color.blue(pixel4) + Color.blue(pixel5) + Color.blue(pixel6) + Color.blue(pixel7) + Color.blue(pixel8)) / 8;
                                     if (((Math.abs(red - arithmeticMeanRed) == 10) && green == arithmeticMeanGreen && blue == arithmeticMeanBlue) || ((Math.abs(green - arithmeticMeanGreen) == 10) && red == arithmeticMeanRed && blue == arithmeticMeanBlue) || ((Math.abs(blue - arithmeticMeanBlue) == 10) && red == arithmeticMeanRed && green == arithmeticMeanGreen)) {
                                         extractText += '1';
                                     } else {
                                         extractText += '0';
                                     }
-                                /*if (red==arithmeticMeanRed && green == arithmeticMeanGreen && blue == arithmeticMeanBlue) {
-                                    extractText += '1';
-                                } else {
-                                    extractText += '0';
-                                }*/
-                            }
-                            iKey++;
-                            if (iKey == binaryKey.length())
-                            {
-                                iKey = 0;
+                                }
+                                iKey++;
+                                if (iKey == binaryKey.length()) {
+                                    iKey = 0;
 
-                            }
+                                }
+                            //}
                         }
                     }
-                }
-                if (!extractText.isEmpty())
-                {
-                    String textBuild = "";
-                    String oneBinarySim;
-                    for (int i=0; i<extractText.length()-6; i+=7)
-                    {
-                        oneBinarySim = extractText.substring(i,i+7);
-                        int cc10 = Integer.parseInt(oneBinarySim, 2);
-                        if (cc10>=65 && cc10<=122)
-                        {
-                            String returnChar = Character.toString((char) cc10);
-                            textBuild += returnChar;
-                        }
-                    }
-                    if (!textBuild.isEmpty())
-                    {
-                        textView.setText(textBuild);
-                    } else {textView.setText("Цифровой водяной знак не найден.");}
-                    //textView.setText(textBuild);
-                } else {textView.setText("Цифровой водяной знак не найден.");}
-                //textView.setText(output);
-            }
-        });
-    }
-                /*for (int yStart = 1; yStart < height-1; yStart++) {
-                    for (int xStart = 1; xStart < width-1; xStart++) {//переделать
-
-                        int pixel = bitmap.getPixel(xStart, yStart);
-                        int red = Color.red(pixel);
-                        int green = Color.green(pixel);
-                        int blue = Color.blue(pixel);
-
-                        int pixel1 = bitmap.getPixel(xStart-1, yStart-1);
-                        int pixel2 = bitmap.getPixel(xStart, yStart-1);
-                        int pixel3 = bitmap.getPixel(xStart+1, yStart-1);
-                        int pixel4 = bitmap.getPixel(xStart+1, yStart);
-                        int pixel5 = bitmap.getPixel(xStart+1, yStart+1);
-                        int pixel6 = bitmap.getPixel(xStart, yStart+1);
-                        int pixel7 = bitmap.getPixel(xStart-1, yStart+1);
-                        int pixel8 = bitmap.getPixel(xStart-1, yStart);
-
-                        int arithmeticMeanRed = (Color.red(pixel1)+Color.red(pixel2)+Color.red(pixel3)+Color.red(pixel4)+Color.red(pixel5)+Color.red(pixel6)+Color.red(pixel7)+Color.red(pixel8))/8;
-                        int arithmeticMeanGreen = (Color.green(pixel1)+Color.green(pixel2)+Color.green(pixel3)+Color.green(pixel4)+Color.green(pixel5)+Color.green(pixel6)+Color.green(pixel7)+Color.green(pixel8))/8;
-                        int arithmeticMeanBlue = (Color.blue(pixel1)+Color.blue(pixel2)+Color.blue(pixel3)+Color.blue(pixel4)+Color.blue(pixel5)+Color.blue(pixel6)+Color.blue(pixel7)+Color.blue(pixel8))/8;
-
-                        if ((Math.abs(red-arithmeticMeanRed)>40) || (Math.abs(green-arithmeticMeanGreen)>40) || (Math.abs(blue-arithmeticMeanBlue)>40))
-                        {
-                            y=yStart;
-                            x=xStart;
-                            break;
-                        }
-                    }
-                    if (y!=0 && x!=0)
-                    {
-                        break;
-                    }
-                }
-
-                while (y < height-1)
-                {
-                    while (x < width-1)
-                    {
-                            if (binaryKeyArray[iKey]=='1') //переделать
-                            {
-                                int pixel = bitmap.getPixel(x, y);
-                                int red = Color.red(pixel);
-                                int green = Color.green(pixel);
-                                int blue = Color.blue(pixel);
-
-                                int pixel1 = bitmap.getPixel(x-1, y-1);
-                                int pixel2 = bitmap.getPixel(x, y-1);
-                                int pixel3 = bitmap.getPixel(x+1, y-1);
-                                int pixel4 = bitmap.getPixel(x+1, y);
-                                int pixel5 = bitmap.getPixel(x+1, y+1);
-                                int pixel6 = bitmap.getPixel(x, y+1);
-                                int pixel7 = bitmap.getPixel(x-1, y+1);
-                                int pixel8 = bitmap.getPixel(x-1, y);
-
-                                int arithmeticMeanRed = (Color.red(pixel1)+Color.red(pixel2)+Color.red(pixel3)+Color.red(pixel4)+Color.red(pixel5)+Color.red(pixel6)+Color.red(pixel7)+Color.red(pixel8))/8;
-                                int arithmeticMeanGreen = (Color.green(pixel1)+Color.green(pixel2)+Color.green(pixel3)+Color.green(pixel4)+Color.green(pixel5)+Color.green(pixel6)+Color.green(pixel7)+Color.green(pixel8))/8;
-                                int arithmeticMeanBlue = (Color.blue(pixel1)+Color.blue(pixel2)+Color.blue(pixel3)+Color.blue(pixel4)+Color.blue(pixel5)+Color.blue(pixel6)+Color.blue(pixel7)+Color.blue(pixel8))/8;
-
-                                if ((Math.abs(red-arithmeticMeanRed)>40) || (Math.abs(green-arithmeticMeanGreen)>40) || (Math.abs(blue-arithmeticMeanBlue)>40))
-                                {
-                                    extractText+='1';
-                                } else { extractText+='0'; }
+                    if (!extractText.isEmpty()) {
+                        String textBuild = "";
+                        String oneBinarySim;
+                        for (int i = 0; i < extractText.length() - 6; i += 7) {
+                            oneBinarySim = extractText.substring(i, i + 7);
+                            int cc10 = Integer.parseInt(oneBinarySim, 2);
+                            if (cc10 >= 65 && cc10 <= 122) {
+                                String returnChar = Character.toString((char) cc10);
+                                textBuild += returnChar;
                             }
-                            iKey++;
-                            if (iKey == binaryKey.length())
-                            {
-                                iKey=0;
-                            }
-                        x+=3;
+                        }
+                        if (!textBuild.isEmpty()) {
+                            textView.setText(textBuild);
+                        } else {
+                            textView.setText("Цифровой водяной знак не найден.");
+                        }
+                        //textView.setText(textBuild);
+                    } else {
+                        textView.setText("Цифровой водяной знак не найден.");
                     }
-                    y+=3;
+                    //textView.setText(output);
+                } else {
+                    textView.setText("Цифровой водяной знак не найден.");
                 }
-                if (extractText != "")
-                {
-                    String textBuild = "";
-                    for (int i=0; i<extractText.length()-6; i+=7)
-                    {
-                        String oneBinarySim = extractText.substring(i,i+7);
-                        int cc10 = Integer.parseInt(oneBinarySim, 2);
-                        if (cc10>=65 && cc10<=122)
-                        {
-                            String returnChar = Character.toString((char) cc10);
-                            textBuild += returnChar;
-                        } //else {textBuild+=' ';}
-                    }
-                        textView.setText(textBuild);
-                } else {textView.setText("Цифровой водяной знак не найден.");}
             }
         });
     }*/
